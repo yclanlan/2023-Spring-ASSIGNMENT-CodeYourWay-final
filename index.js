@@ -1,113 +1,125 @@
 import * as THREE from 'three';
-import {OrbitControls} from "three/addons/controls/OrbitControls.js";
-import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js';
 import {PointerLockControls} from 'three/addons/controls/PointerLockControls.js';
 import {cloud} from "/cloud.js";
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
+
 
 let camera, scene, renderer;
-
-//control
-let controls, // Point Lock
-	raycaster,
-    control; //
-
-//helper
-// let gridHelper, 
-	// axesHelper;
-
-//plane
+let controls, raycaster, mouse; 
 let geometry, texture, material, waterMesh;
 
 let moveForward = false;
 let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
-let canJump = false;
+
 
 let prevTime = performance.now();
-const velocity = new THREE.Vector3();
-const direction = new THREE.Vector3();
+let velocity = new THREE.Vector3();
+let direction = new THREE.Vector3();
 
-
-// //cloud
-// let cloudGeo, cloudTexture, cloudMaterial ;
-
-//clock
-//https://discoverthreejs.com/book/first-steps/animation-loop/
-
-let clock;
-
-//add audio
 let audioListener;
 let audioListenerMesh;
-// let audioSources = [];
-let object = [];
+let myObjects=[];
+let myClassObject=[];
 
 
-const blocker = document.getElementById('blocker');
-const instructions = document.getElementById('instructions');
+let blocker = document.getElementById('blocker');
+let instructions = document.getElementById('instructions');
 
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
 
 init();
 animate();
 
 function init() {
 
-	// clock = new THREE.Clock();
-
-	camera = new THREE.PerspectiveCamera(
-		60,
+	// =============== BASCI SETTING ===============
+	camera = new THREE.PerspectiveCamera(60,
 		window.innerWidth / window.innerHeight,
-		1,
-		5000);
+		1,5000);
 
 	camera.position.y = 300;
 	camera.position.z = 1000;
-
-
-	// raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10);
-
-
+	
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0xE9F1FF);
 	scene.fog = new THREE.FogExp2(0xE9F1FF, 0.0007);
 
-	addSpatialAudio();
-
-	// gridHelper = new THREE.GridHelper(20000, 50, 0xffffff, 0xffffff);
-	// axesHelper = new THREE.AxesHelper(2000);
-
-	// scene.add(gridHelper,
-		//   axesHelper
-	// );
-
-
-
 	renderer = new THREE.WebGLRenderer();
-
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setSize(window.innerWidth, window.innerHeight);
+
 	document.body.appendChild(renderer.domElement);
 
+	// =============== OBJECTS ===============
 
-//~~~~~ first person control ~~~~~~
-// control = new FirstPersonControls(camera, document.body);
-// control.movementSpeed = 500;
-// control.lookSpeed = 0.05;
+	// #########1. Water Plane #########
+	geometry = new THREE.PlaneGeometry(20000, 20000);
+	geometry.rotateX(-Math.PI / 2);
 
-//~~~~~ orbitControl ~~~~~~
-// control = new OrbitControls(camera, renderer.domElement);
+	texture = new THREE.TextureLoader().load('/whitesky.jpg');
+	material = new THREE.MeshBasicMaterial({
+		color: 0xC9DEFF,
+		map: texture,
+	});
 
-//~~~~~ PointerLockControls ~~~~~~
-controls = new PointerLockControls(camera, document.body);
+	waterMesh = new THREE.Mesh(geometry, material);
+	waterMesh.rotation.y = Math.random() * 2000;
+	scene.add(waterMesh);
+	myClassObject.push(waterMesh);
 
-instructions.addEventListener('click', function () {
+	//  ######### 2. Clouds #########
+	
+	// for (let i = 0; i < 2; i++) {
+	
+	// 	let cloudGeo = new THREE.PlaneGeometry(300, 300);
+	// 	let cloudTexture = new THREE.TextureLoader().load("/smoke-1.png")
+	// 	let cloudMaterial = new THREE.MeshBasicMaterial({
+	// 		color: 0x0084ff,
+	// 		map: cloudTexture,
+	// 		transparent: true,
+	// 		opacity: 0.09
+	// 		});
+	
+	// 	for (let i = 0; i < 10; i++) {
+	// 	let cloudMesh = new THREE.Mesh(cloudGeo, cloudMaterial);
+	// 	cloudMesh.position.set(
+	// 			// x,y,z
+	// 			(Math.random()-0.5) * 3000 ,
+	// 			(Math.random()-0.5) * 200 +800 ,
+	// 			(Math.random()-0.5) * 3000 
+	// 			);
+	// 	cloudMesh.rotateZ( Math.random() * 4000);
+	// 	cloudMesh.quaternion.copy(camera.quaternion);
+	// 			myObjects.push(cloudMesh);
+	// 			scene.add(cloudMesh);
+	// 	}
+	
+	
+	
+	for (let i = 0; i < 10; i++) {
+		let ClassObject = new cloud(
+			(Math.random() - 0.5) * i * 600,
+			(Math.random() - 0.5) * 1 * 400 + 700,
+			(Math.random() - 0.5) * i * 600,
+			scene);
+			// scene.add(ClassObject);
+			myClassObject.push(ClassObject);
+		
+		console.log(ClassObject);
+		console.log(myClassObject);
+		}
+	
+
+
+	addSpatialAudio();
+
+// control
+	controls = new PointerLockControls(camera, document.body);
+	scene.add( controls.getObject() );
+
+	instructions.addEventListener('click', function () {
 	controls.lock();
-});
+	});
 
 controls.addEventListener('lock', function () {
 	console.log('lock');
@@ -115,19 +127,15 @@ controls.addEventListener('lock', function () {
 	blocker.style.display = 'none';
 	controls.pointerSpeed = 0.8;
 
-
 });
 
 controls.addEventListener('unlock', function () {
 	console.log('unlock');
 	instructions.style.display = '';
 	blocker.style.display = 'block';
-
 	controls.pointerSpeed = 0;
 
 });
-
-scene.add( controls.getObject() );
 
 const onKeyDown = function ( event ) {
 
@@ -151,11 +159,6 @@ const onKeyDown = function ( event ) {
 		case 'ArrowRight':
 		case 'KeyD':
 			moveRight = true;
-			break;
-
-		case 'Space':
-			if ( canJump === true ) velocity.y += 350;
-			canJump = false;
 			break;
 
 	}
@@ -188,37 +191,42 @@ const onKeyUp = function ( event ) {
 	}
 
 };
+
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
+mouse = new THREE.Vector2(0, 0);
+  let raycaster = new THREE.Raycaster();
+  raycaster.layers.set(2); // only detect intesections on the 2nd layer
 
-	//~~~~~~~~~~~~~~ Water Plane ~~~~~~~~~~~~~~
+document.addEventListener(
+    "mousemove",
+    (ev) => {
+      // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
+      mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
 
-	geometry = new THREE.PlaneGeometry(20000, 20000);
-	geometry.rotateX(-Math.PI / 2);
+      // update our raycaster
+	//   planeNormal.copy(camera.position).normalize();
+	//   plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
+  
+	  raycaster.setFromCamera(mouse,camera);
+	//   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
-	//load the texture -> a matarial
-	texture = new THREE.TextureLoader().load('/whitesky.jpg');
-	material = new THREE.MeshBasicMaterial({
-		color: 0xC9DEFF,
-		map: texture,
-	});
+      // run an intersection check with the grid objects
+	  const intersects = raycaster.intersectObjects(scene.children, true);
+	  console.log(scene.children);
+	  console.log(intersects);
 
-	waterMesh = new THREE.Mesh(geometry, material);
-	waterMesh.rotation.y = Math.random() * 2000;
+	//   for (let i = 0; i < myClassObject.length; i++) {
+    //     myClassObject[i].position.y = 0;
+    //   }
 
-	scene.add(waterMesh);
+	
 
-	for (let i = 0; i < 100; i++) {
-		let myClassObject = new cloud(
-			(Math.random() - 0.5) * i * 600,
-			(Math.random() - 0.5) * 1 * 400 + 700,
-			(Math.random() - 0.5) * i * 600,
-			scene);
-		object.push(myClassObject);
-	}
-
-
+    },
+    false
+  );
 
 }
 
@@ -239,7 +247,7 @@ function addSpatialAudio() {
 	scene.add(audioListenerMesh);
 
 	// create an audio loader which will load our audio files:
-	const audioLoader = new THREE.AudioLoader();
+	let audioLoader = new THREE.AudioLoader();
 
 	// then let's add some audio sources
 
@@ -270,16 +278,9 @@ function addSpatialAudio() {
 
 }
 
-
-
-
-
-
 function animate() {
-	// render();
-	// const delta = clock.getDelta();
-	requestAnimationFrame(animate);
 
+	requestAnimationFrame(animate);
 
 	const time = performance.now();
 
@@ -289,8 +290,7 @@ function animate() {
 
 		velocity.x -= velocity.x * 10.0 * delta;
 		velocity.z -= velocity.z * 10.0 * delta;
-
-		velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
+		// velocity.y -= 9.8 * 100.0 * delta; // 100.0 = mass
 
 		direction.z = Number( moveForward ) - Number( moveBackward );
 		direction.x = Number( moveRight ) - Number( moveLeft );
@@ -299,45 +299,18 @@ function animate() {
 		if ( moveForward || moveBackward ) velocity.z -= direction.z * 1000.0 * delta;
 		if ( moveLeft || moveRight ) velocity.x -= direction.x * 1000.0 * delta;
 
-
 		controls.moveRight( - velocity.x * delta );
 		controls.moveForward( - velocity.z * delta );
-		// controls.moveLeft( - velocity.x * delta );
-		// controls.moveBackward( - velocity.z * delta );
-		// controls.getObject().position.y += ( velocity.y * delta ); 
+
+		controls.getObject().position.y += ( velocity.y * delta ); 
 
 	}
-
-
-
-	// for (let i = 0; i < object.length; i++) {
-	// 	object[i].update();
-	// }
-
-	// let delta = clock.getDelta();
-	// control.update(delta);
-
-
+	
 	prevTime = time;
 	renderer.render(scene, camera);
-	// render();
-}
 
-function render() {
-
-	// let delta = clock.getDelta();
-	//first person
-
-	//orbit
-	// control.update(delta);
-
-	// prevTime = time;
-	// renderer.render(scene, camera);
 
 }
-
-// init();
-
 
 //window Resize
 window.addEventListener('resize', onWindowResize, false);
