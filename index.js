@@ -65,7 +65,7 @@ function init() {
 	waterMesh = new THREE.Mesh(geometry, material);
 	waterMesh.rotation.y = Math.random() * 2000;
 	scene.add(waterMesh);
-	myClassObject.push(waterMesh);
+	// myClassObject.push(waterMesh);
 
 	//  ######### 2. Clouds #########
 	
@@ -98,18 +98,15 @@ function init() {
 	
 	for (let i = 0; i < 10; i++) {
 		let ClassObject = new cloud(
-			(Math.random() - 0.5) * i * 600,
-			(Math.random() - 0.5) * 1 * 400 + 700,
-			(Math.random() - 0.5) * i * 600,
+			(Math.random() - 0.5) * i * 1000,
+			(Math.random() - 0.5) * 1 * 40 + 400,
+			(Math.random() - 0.5) * i * 1000,
 			scene);
 			// scene.add(ClassObject);
 			myClassObject.push(ClassObject);
-		
-		console.log(ClassObject);
-		console.log(myClassObject);
 		}
 	
-
+		console.log(myClassObject);
 
 	addSpatialAudio();
 
@@ -196,31 +193,40 @@ document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
 mouse = new THREE.Vector2(0, 0);
-  let raycaster = new THREE.Raycaster();
-  raycaster.layers.set(2); // only detect intesections on the 2nd layer
+let raycaster = new THREE.Raycaster();
+
+
+
+
+//   raycaster.layers.set(2); // only detect intesections on the 2nd layer
 
 document.addEventListener(
     "mousemove",
     (ev) => {
-      // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
+//       // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
       mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
 
-      // update our raycaster
+//       // update our raycaster
 	//   planeNormal.copy(camera.position).normalize();
 	//   plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
   
 	  raycaster.setFromCamera(mouse,camera);
-	//   raycaster.ray.intersectPlane(plane, intersectionPoint);
+// 	//   raycaster.ray.intersectPlane(plane, intersectionPoint);
 
-      // run an intersection check with the grid objects
-	  const intersects = raycaster.intersectObjects(scene.children, true);
-	  console.log(scene.children);
-	  console.log(intersects);
+//       // run an intersection check with the grid objects
+	//   const intersects = raycaster.intersectObjects(scene.children, true);
+	  const intersects = raycaster.intersectObjects(myClassObject);
+	  if ( intersects.length > 0 ) {
+		console.log('catch');
+	  }
+// 	  console.log(scene.children);
 
-	//   for (let i = 0; i < myClassObject.length; i++) {
-    //     myClassObject[i].position.y = 0;
-    //   }
+// 	//   console.log(intersects);
+
+// 	//   for (let i = 0; i < myClassObject.length; i++) {
+//     //     myClassObject[i].position.y = 0;
+//     //   }
 
 	
 

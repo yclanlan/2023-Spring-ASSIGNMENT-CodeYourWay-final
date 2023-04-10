@@ -10,7 +10,7 @@ export class cloud{
 		color: 0x0084ff,
 		map: cloudTexture,
 		transparent: true,
-		opacity: 0.09
+		opacity: 0.3
 		});
 
 
