@@ -20,7 +20,7 @@ let direction = new THREE.Vector3();
 let audioListener;
 let audioListenerMesh;
 let myObjects=[];
-let myClassObject=[];
+let CloudObjectArray=[];
 
 
 let blocker = document.getElementById('blocker');
@@ -32,7 +32,8 @@ animate();
 
 function init() {
 
-	// =============== BASCI SETTING ===============
+// ============================ BASCI SETTING ==============================
+
 	camera = new THREE.PerspectiveCamera(60,
 		window.innerWidth / window.innerHeight,
 		1,5000);
@@ -50,7 +51,7 @@ function init() {
 
 	document.body.appendChild(renderer.domElement);
 
-	// =============== OBJECTS ===============
+// ============================== OBJECTS ==============================
 
 	// #########1. Water Plane #########
 	geometry = new THREE.PlaneGeometry(20000, 20000);
@@ -65,37 +66,12 @@ function init() {
 	waterMesh = new THREE.Mesh(geometry, material);
 	waterMesh.rotation.y = Math.random() * 2000;
 	scene.add(waterMesh);
-	// myClassObject.push(waterMesh);
+	// CloudObjectArray.push(waterMesh);
 
 	//  ######### 2. Clouds #########
-	
-	// for (let i = 0; i < 2; i++) {
-	
-	// 	let cloudGeo = new THREE.PlaneGeometry(300, 300);
-	// 	let cloudTexture = new THREE.TextureLoader().load("/smoke-1.png")
-	// 	let cloudMaterial = new THREE.MeshBasicMaterial({
-	// 		color: 0x0084ff,
-	// 		map: cloudTexture,
-	// 		transparent: true,
-	// 		opacity: 0.09
-	// 		});
-	
-	// 	for (let i = 0; i < 10; i++) {
-	// 	let cloudMesh = new THREE.Mesh(cloudGeo, cloudMaterial);
-	// 	cloudMesh.position.set(
-	// 			// x,y,z
-	// 			(Math.random()-0.5) * 3000 ,
-	// 			(Math.random()-0.5) * 200 +800 ,
-	// 			(Math.random()-0.5) * 3000 
-	// 			);
-	// 	cloudMesh.rotateZ( Math.random() * 4000);
-	// 	cloudMesh.quaternion.copy(camera.quaternion);
-	// 			myObjects.push(cloudMesh);
-	// 			scene.add(cloudMesh);
-	// 	}
-	
-	
-	
+	const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
+	// let index = 0;
+	 
 	for (let i = 0; i < 10; i++) {
 		let ClassObject = new cloud(
 			(Math.random() - 0.5) * i * 1000,
@@ -103,142 +79,93 @@ function init() {
 			(Math.random() - 0.5) * i * 1000,
 			scene);
 			// scene.add(ClassObject);
-			myClassObject.push(ClassObject);
+			CloudObjectArray.push(ClassObject);
+			
+			// CloudObjectArray.push({
+			// 	names[i]: ClassObject
+			// });
 		}
-	
-		console.log(myClassObject);
+		CloudObjectArray.forEach( (obj,i) => { obj['name'] = names[ i ]; } ); 
+		// console.log(names);
+		console.log(CloudObjectArray);
 
 	addSpatialAudio();
 
-// control
-	controls = new PointerLockControls(camera, document.body);
-	scene.add( controls.getObject() );
-
-	instructions.addEventListener('click', function () {
-	controls.lock();
-	});
-
-controls.addEventListener('lock', function () {
-	console.log('lock');
-	instructions.style.display = 'none';
-	blocker.style.display = 'none';
-	controls.pointerSpeed = 0.8;
-
-});
-
-controls.addEventListener('unlock', function () {
-	console.log('unlock');
-	instructions.style.display = '';
-	blocker.style.display = 'block';
-	controls.pointerSpeed = 0;
-
-});
-
-const onKeyDown = function ( event ) {
-
-	switch ( event.code ) {
-
-		case 'ArrowUp':
-		case 'KeyW':
-			moveForward = true;
-			break;
-
-		case 'ArrowLeft':
-		case 'KeyA':
-			moveLeft = true;
-			break;
-
-		case 'ArrowDown':
-		case 'KeyS':
-			moveBackward = true;
-			break;
-
-		case 'ArrowRight':
-		case 'KeyD':
-			moveRight = true;
-			break;
-
-	}
-
-};
-const onKeyUp = function ( event ) {
-
-	switch ( event.code ) {
-
-		case 'ArrowUp':
-		case 'KeyW':
-			moveForward = false;
-			break;
-
-		case 'ArrowLeft':
-		case 'KeyA':
-			moveLeft = false;
-			break;
-
-		case 'ArrowDown':
-		case 'KeyS':
-			moveBackward = false;
-			break;
-
-		case 'ArrowRight':
-		case 'KeyD':
-			moveRight = false;
-			break;
-
-	}
-
-};
-
-document.addEventListener( 'keydown', onKeyDown );
-document.addEventListener( 'keyup', onKeyUp );
+//============================== Raycaster ==============================
 
 mouse = new THREE.Vector2(0, 0);
 let raycaster = new THREE.Raycaster();
 
 
-
-
-//   raycaster.layers.set(2); // only detect intesections on the 2nd layer
-
 document.addEventListener(
-    "mousemove",
-    (ev) => {
-//       // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
-      mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
+	    "mousemove",
+	    (ev) => {
+	     // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
+	      mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
+	      mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
 
-//       // update our raycaster
-	//   planeNormal.copy(camera.position).normalize();
-	//   plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position);
-  
-	  raycaster.setFromCamera(mouse,camera);
-// 	//   raycaster.ray.intersectPlane(plane, intersectionPoint);
+// update the picking ray with the camera and pointer position
+raycaster.setFromCamera( mouse, camera );
 
-//       // run an intersection check with the grid objects
-	//   const intersects = raycaster.intersectObjects(scene.children, true);
-	  const intersects = raycaster.intersectObjects(myClassObject);
-	  if ( intersects.length > 0 ) {
-		console.log('catch');
-	  }
-// 	  console.log(scene.children);
+// calculate objects intersecting the picking ray
+// const intersects = raycaster.intersectObjects( scene.children );
+// console.log(scene.children)
+// console.log(CloudObjectArray);
+// if (CloudObjectArray!= null){
+let cloudMeshArray = CloudObjectArray.map((cloud)=>cloud.cloudMesh)
+const intersects = raycaster.intersectObjects( cloudMeshArray );
 
-// 	//   console.log(intersects);
+// console.log(found);
 
-// 	//   for (let i = 0; i < myClassObject.length; i++) {
-//     //     myClassObject[i].position.y = 0;
-//     //   }
 
+if ( intersects.length > 0 ) { // hit
+	let found = CloudObjectArray.find( (cloud) => { return cloud.cloudMesh === intersects[0].object});
 	
+	info.style.fontSize = '5vh';
+	info.style.color = 'black';
+	info.innerHTML = ' Hit => ' + found.name; 
+	//  ...[ 0 ]  first intersected object
+	console.log(intersects);
+	console.log(found);
+	// console.log( intersects[ 0 ].object.name + 'hit');
+	
+} else {
+	
+	info.style.fontSize = '1.9vh';
+	info.style.color = 'black';
+	info.innerHTML = 'Nothing !';
+	
+	
+}},false);
+// }
 
-    },
-    false
-  );
 
-}
+// names for some objects
 
+// document.addEventListener(
+//     "mousemove",
+//     (ev) => {
+//      // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
+//       mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
+//       mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
 
-//~~~~~~~~~~~~~~~add sound~~~~~~~~~~~~~~~~~~
+// 	  raycaster.setFromCamera(mouse,camera);
+// 	//  const intersects = raycaster.intersectObjects(scene.children, true);
+// 	  const intersects = raycaster.intersectObjects(scene.children);
+// 	  if ( intersects.length > 0 ) {
+// 		console.log('catch');
+// 		console.log(intersects.length);
+// 	  }
+// 	//console.log(scene.children);
+//     },false);
+// }
+};	
+//============================== Sound ==============================
+
 function addSpatialAudio() {
+
+	// ################## LISTENER ##################
+
 	// first lets add our audio listener.  This is our ear (or microphone) within the 3D space.
 	audioListener = new THREE.AudioListener();
 
@@ -251,12 +178,40 @@ function addSpatialAudio() {
 	audioListenerMesh.add(audioListener);
 	audioListenerMesh.position.set(0, 0, 0);
 	scene.add(audioListenerMesh);
-
-	// create an audio loader which will load our audio files:
+	
+	// #################### AUDIO ####################
+	// LOADER-> LOAD SOURCE TO MESH -> ADD MESH TO SCENE 
+	// 1. create an audio loader 
 	let audioLoader = new THREE.AudioLoader();
+	let audioLoader2 = new THREE.AudioLoader();
 
-	// then let's add some audio sources
+	// 2. create a source
+	let audioSource = new THREE.PositionalAudio(audioListener);
+	let audioSource2 = new THREE.PositionalAudio(audioListener);
 
+	// 3.use loader load the audio file into the positional audio source
+	audioLoader.load("wind_sound.mp3", function (buffer) {
+	audioSource.setBuffer(buffer);
+	// audioSource.setDistanceModel("exponential");
+	// audioSource.setRefDistance(0.5);
+	// audioSource.setRolloffFactor(3);
+	audioSource.setLoop(true);
+	audioSource.setVolume(0.6);
+	audioSource.play();
+	});
+
+	audioLoader2.load("Cloud looking down on two warring cities.mp3", function (buffer) {
+		audioSource2.setBuffer(buffer);
+		// audioSource.setDistanceModel("exponential");
+		// audioSource.setRefDistance(0.5);
+		// audioSource.setRolloffFactor(3);
+		// audioSource2.setLoop(ture);
+		audioSource2.setVolume(0.6);
+		audioSource2.play();
+	});
+
+
+	//4. add source to mesh!
 	let audiomesh = new THREE.Mesh(
 		new THREE.SphereGeometry(10000, 12, 12),
 		new THREE.MeshBasicMaterial({
@@ -264,25 +219,112 @@ function addSpatialAudio() {
 		})
 	);
 
-	let audioSource = new THREE.PositionalAudio(audioListener);
-
-	// load the audio file into the positional audio source
-	audioLoader.load("wind_sound.mp3", function (buffer) {
-		audioSource.setBuffer(buffer);
-		// audioSource.setDistanceModel("exponential");
-		// audioSource.setRefDistance(0.5);
-		// audioSource.setRolloffFactor(3);
-		audioSource.setLoop(true);
-		audioSource.setVolume(0.6);
-		audioSource.play();
-
-	});
-
 	audiomesh.add(audioSource);
 	scene.add(audiomesh);
+
+
+	let audiomesh2 = new THREE.Mesh(
+		new THREE.SphereGeometry(15000, 12, 12),
+		new THREE.MeshBasicMaterial({
+			color: "yellow"
+
+		})
+	);
+	audiomesh2.visible = false;
+	audiomesh2.add(audioSource2);
+	audiomesh2.position.x = 100;
+	audiomesh2.position.y = 300;
+	audiomesh2.position.z = 100;
+	scene.add(audiomesh2);
+
 	//   audioSources.push(mesh);
 
+
+// ============================== CONTROL ==============================
+
+controls = new PointerLockControls(camera, document.body);
+scene.add( controls.getObject() );
+
+instructions.addEventListener('click', function () {
+controls.lock();
+});
+
+controls.addEventListener('lock', function () {
+console.log('lock');
+instructions.style.display = 'none';
+blocker.style.display = 'none';
+controls.pointerSpeed = 0.8;
+
+});
+
+controls.addEventListener('unlock', function () {
+console.log('unlock');
+instructions.style.display = '';
+blocker.style.display = 'block';
+controls.pointerSpeed = 0;
+
+});
+
+const onKeyDown = function ( event ) {
+
+switch ( event.code ) {
+
+    case 'ArrowUp':
+    case 'KeyW':
+        moveForward = true;
+        break;
+
+    case 'ArrowLeft':
+    case 'KeyA':
+        moveLeft = true;
+        break;
+
+    case 'ArrowDown':
+    case 'KeyS':
+        moveBackward = true;
+        break;
+
+    case 'ArrowRight':
+    case 'KeyD':
+        moveRight = true;
+        break;
+
 }
+};
+const onKeyUp = function ( event ) {
+
+switch ( event.code ) {
+
+    case 'ArrowUp':
+    case 'KeyW':
+        moveForward = false;
+        break;
+
+    case 'ArrowLeft':
+    case 'KeyA':
+        moveLeft = false;
+        break;
+
+    case 'ArrowDown':
+    case 'KeyS':
+        moveBackward = false;
+        break;
+
+    case 'ArrowRight':
+    case 'KeyD':
+        moveRight = false;
+        break;
+
+}
+
+};
+
+document.addEventListener( 'keydown', onKeyDown );
+document.addEventListener( 'keyup', onKeyUp );
+
+}
+
+
 
 function animate() {
 
@@ -318,6 +360,18 @@ function animate() {
 
 }
 
+function render(){
+	
+	
+
+	renderer.render( scene, camera );
+
+
+
+}
+
+
+
 //window Resize
 window.addEventListener('resize', onWindowResize, false);
 
@@ -328,4 +382,4 @@ function onWindowResize() {
 
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
-}
+	};
