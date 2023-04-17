@@ -10,13 +10,13 @@ export class cloud{
 		color: 0x0084ff,
 		map: cloudTexture,
 		transparent: true,
-		opacity: 0.3
+		opacity: 0.05
 		});
 
 
 
 
-	// for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 10; i++) {
 		this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMaterial);
 		this.cloudMesh.position.set(
             // x,y,z
@@ -25,6 +25,7 @@ export class cloud{
             (Math.random()-0.5) * 100 + z
 
 			);
+		
 
 	// 	this.center = new THREE.Vector3(
 	// (Math.random()-0.5) * 200 + x,
@@ -36,7 +37,7 @@ export class cloud{
 		scene.add(this.cloudMesh);
         this.frameCount = 0;
 	
-		// }
+		}
 
 		//display information
         this.popup = false;

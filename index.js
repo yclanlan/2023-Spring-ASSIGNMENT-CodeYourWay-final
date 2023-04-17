@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {PointerLockControls} from 'three/addons/controls/PointerLockControls.js';
+import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js';
 import {cloud} from "/cloud.js";
 
 
@@ -19,12 +20,12 @@ let direction = new THREE.Vector3();
 
 let audioListener;
 let audioListenerMesh;
-let myObjects=[];
 let CloudObjectArray=[];
 
 
 let blocker = document.getElementById('blocker');
 let instructions = document.getElementById('instructions');
+
 
 
 init();
@@ -38,7 +39,7 @@ function init() {
 		window.innerWidth / window.innerHeight,
 		1,5000);
 
-	camera.position.y = 300;
+	camera.position.y = 400;
 	camera.position.z = 1000;
 	
 	scene = new THREE.Scene();
@@ -59,12 +60,14 @@ function init() {
 
 	texture = new THREE.TextureLoader().load('/whitesky.jpg');
 	material = new THREE.MeshBasicMaterial({
-		color: 0xC9DEFF,
+		// color: 0xC9DEFF,
+		color: "rgb(200,220,250,10)",
 		map: texture,
 	});
 
 	waterMesh = new THREE.Mesh(geometry, material);
 	waterMesh.rotation.y = Math.random() * 2000;
+	waterMesh.position.y = -300;
 	scene.add(waterMesh);
 	// CloudObjectArray.push(waterMesh);
 
@@ -89,7 +92,7 @@ function init() {
 		// console.log(names);
 		console.log(CloudObjectArray);
 
-	addSpatialAudio();
+	// addSpatialAudio();
 
 //============================== Raycaster ==============================
 
@@ -123,7 +126,7 @@ if ( intersects.length > 0 ) { // hit
 	
 	info.style.fontSize = '5vh';
 	info.style.color = 'black';
-	info.innerHTML = ' Hit => ' + found.name; 
+	info.innerHTML =  found.name; 
 	//  ...[ 0 ]  first intersected object
 	console.log(intersects);
 	console.log(found);
@@ -133,7 +136,7 @@ if ( intersects.length > 0 ) { // hit
 	
 	info.style.fontSize = '1.9vh';
 	info.style.color = 'black';
-	info.innerHTML = 'Nothing !';
+	info.innerHTML = '';
 	
 	
 }},false);
@@ -159,91 +162,17 @@ if ( intersects.length > 0 ) { // hit
 // 	//console.log(scene.children);
 //     },false);
 // }
-};	
-//============================== Sound ==============================
 
-function addSpatialAudio() {
 
-	// ################## LISTENER ##################
-
-	// first lets add our audio listener.  This is our ear (or microphone) within the 3D space.
-	audioListener = new THREE.AudioListener();
-
-	// create a 3D mesh so we can see the location of the audio listener
-	// this is not strictly necessary, but can be helpful for debugging
-	audioListenerMesh = new THREE.Mesh(
-		new THREE.BoxGeometry(2, 2, 2),
-		new THREE.MeshBasicMaterial({})
-	);
-	audioListenerMesh.add(audioListener);
-	audioListenerMesh.position.set(0, 0, 0);
-	scene.add(audioListenerMesh);
 	
-	// #################### AUDIO ####################
-	// LOADER-> LOAD SOURCE TO MESH -> ADD MESH TO SCENE 
-	// 1. create an audio loader 
-	let audioLoader = new THREE.AudioLoader();
-	let audioLoader2 = new THREE.AudioLoader();
-
-	// 2. create a source
-	let audioSource = new THREE.PositionalAudio(audioListener);
-	let audioSource2 = new THREE.PositionalAudio(audioListener);
-
-	// 3.use loader load the audio file into the positional audio source
-	audioLoader.load("wind_sound.mp3", function (buffer) {
-	audioSource.setBuffer(buffer);
-	// audioSource.setDistanceModel("exponential");
-	// audioSource.setRefDistance(0.5);
-	// audioSource.setRolloffFactor(3);
-	audioSource.setLoop(true);
-	audioSource.setVolume(0.6);
-	audioSource.play();
-	});
-
-	audioLoader2.load("Cloud looking down on two warring cities.mp3", function (buffer) {
-		audioSource2.setBuffer(buffer);
-		// audioSource.setDistanceModel("exponential");
-		// audioSource.setRefDistance(0.5);
-		// audioSource.setRolloffFactor(3);
-		// audioSource2.setLoop(ture);
-		audioSource2.setVolume(0.6);
-		audioSource2.play();
-	});
-
-
-	//4. add source to mesh!
-	let audiomesh = new THREE.Mesh(
-		new THREE.SphereGeometry(10000, 12, 12),
-		new THREE.MeshBasicMaterial({
-			color: "blue"
-		})
-	);
-
-	audiomesh.add(audioSource);
-	scene.add(audiomesh);
-
-
-	let audiomesh2 = new THREE.Mesh(
-		new THREE.SphereGeometry(15000, 12, 12),
-		new THREE.MeshBasicMaterial({
-			color: "yellow"
-
-		})
-	);
-	audiomesh2.visible = false;
-	audiomesh2.add(audioSource2);
-	audiomesh2.position.x = 100;
-	audiomesh2.position.y = 300;
-	audiomesh2.position.z = 100;
-	scene.add(audiomesh2);
-
-	//   audioSources.push(mesh);
-
-
 // ============================== CONTROL ==============================
+// controls = new FirstPersonControls(camera, document.body);
+// controls.movementSpeed = 500;
+// controls.lookSpeed = 0.03;
+
 
 controls = new PointerLockControls(camera, document.body);
-scene.add( controls.getObject() );
+// scene.add( controls.getObject() );
 
 instructions.addEventListener('click', function () {
 controls.lock();
@@ -322,7 +251,87 @@ switch ( event.code ) {
 document.addEventListener( 'keydown', onKeyDown );
 document.addEventListener( 'keyup', onKeyUp );
 
-}
+};
+
+//============================== Sound ==============================
+
+function addSpatialAudio() {
+
+	// ################## LISTENER ##################
+
+	// first lets add our audio listener.  This is our ear (or microphone) within the 3D space.
+	audioListener = new THREE.AudioListener();
+
+	// create a 3D mesh so we can see the location of the audio listener
+	// this is not strictly necessary, but can be helpful for debugging
+	audioListenerMesh = new THREE.Mesh(
+		new THREE.BoxGeometry(2, 2, 2),
+		new THREE.MeshBasicMaterial({})
+	);
+	audioListenerMesh.add(audioListener);
+	audioListenerMesh.position.set(0, 0, 0);
+	scene.add(audioListenerMesh);
+	
+	// #################### AUDIO ####################
+	// LOADER-> LOAD SOURCE TO MESH -> ADD MESH TO SCENE 
+	// 1. create an audio loader 
+	let audioLoader = new THREE.AudioLoader();
+	let audioLoader2 = new THREE.AudioLoader();
+
+	// 2. create a source
+	let audioSource = new THREE.PositionalAudio(audioListener);
+	let audioSource2 = new THREE.PositionalAudio(audioListener);
+
+	// 3.use loader load the audio file into the positional audio source
+	audioLoader.load("wind_sound.mp3", function (buffer) {
+	audioSource.setBuffer(buffer);
+	// audioSource.setDistanceModel("exponential");
+	// audioSource.setRefDistance(0.5);
+	// audioSource.setRolloffFactor(3);
+	audioSource.setLoop(true);
+	audioSource.setVolume(0.6);
+	audioSource.play();
+	});
+
+	audioLoader2.load("Cloud looking down on two warring cities.mp3", function (buffer) {
+		audioSource2.setBuffer(buffer);
+		// audioSource.setDistanceModel("exponential");
+		// audioSource.setRefDistance(0.5);
+		// audioSource.setRolloffFactor(3);
+		// audioSource2.setLoop(ture);
+		audioSource2.setVolume(0.6);
+		audioSource2.play();
+	});
+
+
+	//4. add source to mesh!
+	let audiomesh = new THREE.Mesh(
+		new THREE.SphereGeometry(10000, 12, 12),
+		new THREE.MeshBasicMaterial({
+			color: "blue"
+		})
+	);
+
+	audiomesh.add(audioSource);
+	scene.add(audiomesh);
+
+
+	let audiomesh2 = new THREE.Mesh(
+		new THREE.SphereGeometry(15000, 12, 12),
+		new THREE.MeshBasicMaterial({
+			color: "yellow"
+
+		})
+	);
+	audiomesh2.visible = false;
+	audiomesh2.add(audioSource2);
+	audiomesh2.position.x = 100;
+	audiomesh2.position.y = 300;
+	audiomesh2.position.z = 100;
+	scene.add(audiomesh2);
+
+	//   audioSources.push(mesh);
+	}
 
 
 
@@ -356,13 +365,14 @@ function animate() {
 	
 	prevTime = time;
 	renderer.render(scene, camera);
+	
 
 
 }
 
 function render(){
 	
-	
+	controls.update(time);
 
 	renderer.render( scene, camera );
 
@@ -383,3 +393,49 @@ function onWindowResize() {
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
 	};
+
+//edit text
+	function populateInfo(data) {
+		if (data) {
+			let container = document.querySelector("#infoContainer");
+			container.style.display = "block";
+	
+			let title = document.createElement("h1");
+			let author = document.createElement("h2");
+			let isbn = document.createElement("p");
+			let status = document.createElement('p');
+	
+			title.textContent = data.name;
+			author.textContent = data.author;
+			isbn.textContent = data.isbn;
+			status.textContent = data.status;
+	
+	
+			container.appendChild(title);
+			container.appendChild(author);
+			container.appendChild(isbn);
+			container.appendChild(status);
+		}
+	}
+	
+	function populateComment(data) {
+		if (data) {
+	
+			let container = document.querySelector("#commentContainer");
+			let header = document.createElement("h2");
+			header.textContent = "activity logs";
+			container.appendChild(header);
+	
+			container.style.display = "block";
+			for (let i = 0; i < data.comments.length; i++) {
+	
+				let p = document.createElement("p");
+				p.className = "comment"
+				p.textContent = data.comments[i];
+				container.appendChild(p);
+	
+	
+			}
+	
+		}
+	}
