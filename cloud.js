@@ -40,8 +40,8 @@ export class cloud{
 		}
 
 		//display information
-        this.popup = false;
         this.id = id;
+
     }
 
     update() {

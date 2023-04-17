@@ -33,7 +33,7 @@ animate();
 
 function init() {
 
-// ============================ BASCI SETTING ==============================
+// ============================ BASIC SETTING ==============================
 
 	camera = new THREE.PerspectiveCamera(60,
 		window.innerWidth / window.innerHeight,
@@ -54,7 +54,7 @@ function init() {
 
 // ============================== OBJECTS ==============================
 
-	// #########1. Water Plane #########
+	// #########  1. Water Plane   #########
 	geometry = new THREE.PlaneGeometry(20000, 20000);
 	geometry.rotateX(-Math.PI / 2);
 
@@ -69,11 +69,22 @@ function init() {
 	waterMesh.rotation.y = Math.random() * 2000;
 	waterMesh.position.y = -300;
 	scene.add(waterMesh);
-	// CloudObjectArray.push(waterMesh);
+
 
 	//  ######### 2. Clouds #########
-	const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
-	// let index = 0;
+	// const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
+	const names = [ 
+		'The Vanishing Act <br> The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse',
+		'The Heavy Heart <br> Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart‘s heavy ache <br> A burden too great to bear.',
+		'cloud03',
+		'cloud04',
+		'cloud05',
+		'cloud06', 
+		'cloud07', 
+		'cloud08',
+		'cloud09',
+		'cloud10']
+
 	 
 	for (let i = 0; i < 10; i++) {
 		let ClassObject = new cloud(
@@ -97,7 +108,7 @@ function init() {
 //============================== Raycaster ==============================
 
 mouse = new THREE.Vector2(0, 0);
-let raycaster = new THREE.Raycaster();
+raycaster = new THREE.Raycaster();
 
 
 document.addEventListener(
@@ -117,15 +128,16 @@ raycaster.setFromCamera( mouse, camera );
 // if (CloudObjectArray!= null){
 let cloudMeshArray = CloudObjectArray.map((cloud)=>cloud.cloudMesh)
 const intersects = raycaster.intersectObjects( cloudMeshArray );
-
+console.log(controls);
 // console.log(found);
 
 
-if ( intersects.length > 0 ) { // hit
+if ( intersects.length > 0 && controls.isLocked ==true) { // hit
 	let found = CloudObjectArray.find( (cloud) => { return cloud.cloudMesh === intersects[0].object});
 	
-	info.style.fontSize = '5vh';
-	info.style.color = 'black';
+	// info.style.fontSize = '5vh';
+	// info.style.color = 'black';
+	// info.style.animation =  "fadeInAnimation, ease, 3s"; 
 	info.innerHTML =  found.name; 
 	//  ...[ 0 ]  first intersected object
 	console.log(intersects);
@@ -140,120 +152,16 @@ if ( intersects.length > 0 ) { // hit
 	
 	
 }},false);
-// }
-
-
-// names for some objects
-
-// document.addEventListener(
-//     "mousemove",
-//     (ev) => {
-//      // three.js expects 'normalized device coordinates' (i.e. between -1 and 1 on both axes)
-//       mouse.x = (ev.clientX / window.innerWidth) * 2 - 1;
-//       mouse.y = -(ev.clientY / window.innerHeight) * 2 + 1;
-
-// 	  raycaster.setFromCamera(mouse,camera);
-// 	//  const intersects = raycaster.intersectObjects(scene.children, true);
-// 	  const intersects = raycaster.intersectObjects(scene.children);
-// 	  if ( intersects.length > 0 ) {
-// 		console.log('catch');
-// 		console.log(intersects.length);
-// 	  }
-// 	//console.log(scene.children);
-//     },false);
-// }
-
-
 	
 // ============================== CONTROL ==============================
-// controls = new FirstPersonControls(camera, document.body);
-// controls.movementSpeed = 500;
-// controls.lookSpeed = 0.03;
-
 
 controls = new PointerLockControls(camera, document.body);
-// scene.add( controls.getObject() );
-
-instructions.addEventListener('click', function () {
-controls.lock();
-});
-
-controls.addEventListener('lock', function () {
-console.log('lock');
-instructions.style.display = 'none';
-blocker.style.display = 'none';
-controls.pointerSpeed = 0.8;
-
-});
-
-controls.addEventListener('unlock', function () {
-console.log('unlock');
-instructions.style.display = '';
-blocker.style.display = 'block';
-controls.pointerSpeed = 0;
-
-});
-
-const onKeyDown = function ( event ) {
-
-switch ( event.code ) {
-
-    case 'ArrowUp':
-    case 'KeyW':
-        moveForward = true;
-        break;
-
-    case 'ArrowLeft':
-    case 'KeyA':
-        moveLeft = true;
-        break;
-
-    case 'ArrowDown':
-    case 'KeyS':
-        moveBackward = true;
-        break;
-
-    case 'ArrowRight':
-    case 'KeyD':
-        moveRight = true;
-        break;
-
-}
-};
-const onKeyUp = function ( event ) {
-
-switch ( event.code ) {
-
-    case 'ArrowUp':
-    case 'KeyW':
-        moveForward = false;
-        break;
-
-    case 'ArrowLeft':
-    case 'KeyA':
-        moveLeft = false;
-        break;
-
-    case 'ArrowDown':
-    case 'KeyS':
-        moveBackward = false;
-        break;
-
-    case 'ArrowRight':
-    case 'KeyD':
-        moveRight = false;
-        break;
-
-}
+initHTMLlayer();
+initControlMove();
 
 };
 
-document.addEventListener( 'keydown', onKeyDown );
-document.addEventListener( 'keyup', onKeyUp );
-
-};
-
-//============================== Sound ==============================
+//============================== SOUND ==============================
 
 function addSpatialAudio() {
 
@@ -276,11 +184,11 @@ function addSpatialAudio() {
 	// LOADER-> LOAD SOURCE TO MESH -> ADD MESH TO SCENE 
 	// 1. create an audio loader 
 	let audioLoader = new THREE.AudioLoader();
-	let audioLoader2 = new THREE.AudioLoader();
+	
 
 	// 2. create a source
 	let audioSource = new THREE.PositionalAudio(audioListener);
-	let audioSource2 = new THREE.PositionalAudio(audioListener);
+	
 
 	// 3.use loader load the audio file into the positional audio source
 	audioLoader.load("wind_sound.mp3", function (buffer) {
@@ -293,16 +201,6 @@ function addSpatialAudio() {
 	audioSource.play();
 	});
 
-	audioLoader2.load("Cloud looking down on two warring cities.mp3", function (buffer) {
-		audioSource2.setBuffer(buffer);
-		// audioSource.setDistanceModel("exponential");
-		// audioSource.setRefDistance(0.5);
-		// audioSource.setRolloffFactor(3);
-		// audioSource2.setLoop(ture);
-		audioSource2.setVolume(0.6);
-		audioSource2.play();
-	});
-
 
 	//4. add source to mesh!
 	let audiomesh = new THREE.Mesh(
@@ -313,24 +211,9 @@ function addSpatialAudio() {
 	);
 
 	audiomesh.add(audioSource);
+	audiomesh.visible = false;
 	scene.add(audiomesh);
 
-
-	let audiomesh2 = new THREE.Mesh(
-		new THREE.SphereGeometry(15000, 12, 12),
-		new THREE.MeshBasicMaterial({
-			color: "yellow"
-
-		})
-	);
-	audiomesh2.visible = false;
-	audiomesh2.add(audioSource2);
-	audiomesh2.position.x = 100;
-	audiomesh2.position.y = 300;
-	audiomesh2.position.z = 100;
-	scene.add(audiomesh2);
-
-	//   audioSources.push(mesh);
 	}
 
 
@@ -338,7 +221,6 @@ function addSpatialAudio() {
 function animate() {
 
 	requestAnimationFrame(animate);
-
 	const time = performance.now();
 
 	if ( controls.isLocked === true ) {
@@ -395,21 +277,124 @@ function onWindowResize() {
 	};
 
 //edit text
+
+function initControlMove(){
+	const onKeyDown = function ( event ) {
+
+		switch ( event.code ) {
+		
+			case 'ArrowUp':
+			case 'KeyW':
+				moveForward = true;
+				break;
+		
+			case 'ArrowLeft':
+			case 'KeyA':
+				moveLeft = true;
+				break;
+		
+			case 'ArrowDown':
+			case 'KeyS':
+				moveBackward = true;
+				break;
+		
+			case 'ArrowRight':
+			case 'KeyD':
+				moveRight = true;
+				break;
+		
+		}
+		};
+		const onKeyUp = function ( event ) {
+		
+		switch ( event.code ) {
+		
+			case 'ArrowUp':
+			case 'KeyW':
+				moveForward = false;
+				break;
+		
+			case 'ArrowLeft':
+			case 'KeyA':
+				moveLeft = false;
+				break;
+		
+			case 'ArrowDown':
+			case 'KeyS':
+				moveBackward = false;
+				break;
+		
+			case 'ArrowRight':
+			case 'KeyD':
+				moveRight = false;
+				break;
+		
+		}
+		
+		};
+		
+		document.addEventListener( 'keydown', onKeyDown );
+		document.addEventListener( 'keyup', onKeyUp );
+
+}
+
+function initHTMLlayer(){
+
+
+		instructions.addEventListener('click', function () {
+		controls.lock();
+		});
+		
+		controls.addEventListener('lock', function () {
+		console.log('view control lock to mouse');
+		instructions.style.display = 'none';
+		blocker.style.display = 'none';
+		info.style.display='block';
+		controls.pointerSpeed = 0.8;
+		
+		});
+		
+		controls.addEventListener('unlock', function () {
+		console.log('view control unlock');
+		instructions.style.display = '';
+		blocker.style.display = 'block';
+		info.style.display='none';
+		controls.pointerSpeed = 0;
+		
+		});
+}
+
+
+
+async function getData() {
+    const requestURL = "./poem.json";
+    const request = new Request(requestURL);
+    const response = await fetch(request);
+    data = await response.json();
+
+    if (data.length > 0) {
+
+        for (let i = 0; i < data.length; i++) {
+            let p = new Portal(i * 20 - data.length * 20 / 2, 5, i * 20 - data.length * 20 / 2, scene, i);
+            let particle_num = data[i].comments.length;
+            p.centerFrame();
+            p.createParticles(particle_num);
+            portals.push(p);
+        }
+    }
+}
+
+
 	function populateInfo(data) {
 		if (data) {
-			let container = document.querySelector("#infoContainer");
+			let container = document.querySelector("#info");
 			container.style.display = "block";
 	
 			let title = document.createElement("h1");
 			let author = document.createElement("h2");
-			let isbn = document.createElement("p");
-			let status = document.createElement('p');
 	
 			title.textContent = data.name;
 			author.textContent = data.author;
-			isbn.textContent = data.isbn;
-			status.textContent = data.status;
-	
 	
 			container.appendChild(title);
 			container.appendChild(author);
