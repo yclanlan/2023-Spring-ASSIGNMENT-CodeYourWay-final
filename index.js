@@ -74,16 +74,17 @@ function init() {
 	//  ######### 2. Clouds #########
 	// const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
 	const names = [ 
-		'The Vanishing Act <br> The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse',
-		'The Heavy Heart <br> Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart‘s heavy ache <br> A burden too great to bear.',
-		'cloud03',
-		'cloud04',
-		'cloud05',
-		'cloud06', 
-		'cloud07', 
-		'cloud08',
-		'cloud09',
-		'cloud10']
+		"The Vanishing Act <br> The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse",
+		"The Heavy Heart <br> Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart's heavy ache <br> A burden too great to bear.",
+		"The Lost Wanderer <br>The clouds are a guide for the lost,<br>A beacon in the sky's vast expanse.<br>They lead the way through storm and frost,<br>A compass for the wandering nomad.",
+		"The Reflection <br>The clouds reflect the soul's turmoil,<br>A mirror of our innermost fears.<br>Their fleeting forms a constant reminder,<br>That all must pass, even our tears.",
+		"The Love Letter<br>The clouds above, a love letter to the earth,<br>A tender embrace from heaven's berth.<br>Their gentle touch, a reminder of grace,<br>A promise that love never leaves its place.",
+		"The Hopeful<br>The clouds above, a sign of hope,<br>A symbol of a brighter tomorrow.<br>Their fleeting nature a testament,<br>To the ever-changing nature of our sorrows.",
+		"The Starry Night<br>The clouds above, a canvas of the night,<br>A backdrop for the stars' brilliant light.<br>Their fleeting forms a reminder,<br>That even the sky can change in time.",
+		"The Journey<br>The clouds above, a journey through life,<br>A metaphor for all that we strive.<br>Their ever-changing forms a lesson,<br>That in life, we must learn to listen.",
+		"The Whispering Wind<br>The clouds that sail on the whispering wind,<br>Carry with them secrets yet to be revealed.<br>Their silent forms, a messenger of fate,<br>A hint of what lies ahead, a promise to wait.",
+		"The Freedom<br>The clouds above, a symbol of freedom,<br>A reminder that our minds can roam.<br>Their ever-changing forms, a release,<br>From the cages that bind us to our homes."
+]
 
 	 
 	for (let i = 0; i < 10; i++) {
