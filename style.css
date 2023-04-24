@@ -34,6 +34,15 @@ canvas {
 
 }
 
+h1{	
+	margin: 0;
+	/* background-color: #000; */
+	color: #fff;
+	font-family: cursive;
+	font-size: 36px;
+	line-height: 40px;
+	overscroll-behavior: none;
+}
 body {
 	margin: 0;
 	background-color: #000;
@@ -52,26 +61,29 @@ body {
 	justify-content: center;
 	align-items: center;
 	font-Size:3vh;
-	
+	width: 100%;
+	opacity: 0;
 	/* position: absolute; */
 	/* top: 0px; */
-	width: 100%;
 	/* padding: 30vh; */
+	
+	
 	
 	box-sizing: border-box;
 	text-align: center;
 
-	z-index: 1; 	
-	animation: fadeInAnimation ease 3s;
+	z-index: 1; 
+	animation: fadeInAnimation;
+	animation-duration: 5s;
 	animation-iteration-count: 1; 
 	animation-fill-mode: forwards; 
-	
+
 
 }
 
 @keyframes fadeInAnimation {
 
-	0% {pacity: 0; }
+	0% {opacity: 0; }
 	100% {opacity: 1;}
 	
 	}

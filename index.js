@@ -1,7 +1,9 @@
 import * as THREE from 'three';
 import {PointerLockControls} from 'three/addons/controls/PointerLockControls.js';
 import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js';
-import {cloud} from "/cloud.js";
+import {cloud} from "./cloud.js";
+import {cloud2} from './cloud2.js';
+import {cloud3} from './cloud3.js';
 
 
 let camera, scene, renderer;
@@ -44,7 +46,7 @@ function init() {
 	
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0xE9F1FF);
-	scene.fog = new THREE.FogExp2(0xE9F1FF, 0.0007);
+	scene.fog = new THREE.FogExp2(0xE9F1FF, 0.0004);
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setPixelRatio(window.devicePixelRatio);
@@ -73,38 +75,59 @@ function init() {
 
 	//  ######### 2. Clouds #########
 	// const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
-	const names = [ 
+	const poemContent = [ 
 		"The Vanishing Act <br> The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse",
 		"The Heavy Heart <br> Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart's heavy ache <br> A burden too great to bear.",
 		"The Lost Wanderer <br>The clouds are a guide for the lost,<br>A beacon in the sky's vast expanse.<br>They lead the way through storm and frost,<br>A compass for the wandering nomad.",
 		"The Reflection <br>The clouds reflect the soul's turmoil,<br>A mirror of our innermost fears.<br>Their fleeting forms a constant reminder,<br>That all must pass, even our tears.",
-		"The Love Letter<br>The clouds above, a love letter to the earth,<br>A tender embrace from heaven's berth.<br>Their gentle touch, a reminder of grace,<br>A promise that love never leaves its place.",
-		"The Hopeful<br>The clouds above, a sign of hope,<br>A symbol of a brighter tomorrow.<br>Their fleeting nature a testament,<br>To the ever-changing nature of our sorrows.",
-		"The Starry Night<br>The clouds above, a canvas of the night,<br>A backdrop for the stars' brilliant light.<br>Their fleeting forms a reminder,<br>That even the sky can change in time.",
-		"The Journey<br>The clouds above, a journey through life,<br>A metaphor for all that we strive.<br>Their ever-changing forms a lesson,<br>That in life, we must learn to listen.",
-		"The Whispering Wind<br>The clouds that sail on the whispering wind,<br>Carry with them secrets yet to be revealed.<br>Their silent forms, a messenger of fate,<br>A hint of what lies ahead, a promise to wait.",
-		"The Freedom<br>The clouds above, a symbol of freedom,<br>A reminder that our minds can roam.<br>Their ever-changing forms, a release,<br>From the cages that bind us to our homes."
+		"The Love Letter <br>The clouds above, a love letter to the earth,<br>A tender embrace from heaven's berth.<br>Their gentle touch, a reminder of grace,<br>A promise that love never leaves its place.",
+		"The Hopeful <br>The clouds above, a sign of hope,<br>A symbol of a brighter tomorrow.<br>Their fleeting nature a testament,<br>To the ever-changing nature of our sorrows.",
+		"The Starry Night <br>The clouds above, a canvas of the night,<br>A backdrop for the stars' brilliant light.<br>Their fleeting forms a reminder,<br>That even the sky can change in time.",
+		"The Journey <br>The clouds above, a journey through life,<br>A metaphor for all that we strive.<br>Their ever-changing forms a lesson,<br>That in life, we must learn to listen.",
+		"The Whispering Wind <br>The clouds that sail on the whispering wind,<br>Carry with them secrets yet to be revealed.<br>Their silent forms, a messenger of fate,<br>A hint of what lies ahead, a promise to wait.",
+		"The Freedom <br>The clouds above, a symbol of freedom,<br>A reminder that our minds can roam.<br>Their ever-changing forms, a release,<br>From the cages that bind us to our homes."
 ]
 
-	 
-	for (let i = 0; i < 10; i++) {
+	for (let i = 0; i < 3; i++) {
 		let ClassObject = new cloud(
-			(Math.random() - 0.5) * i * 1000,
-			(Math.random() - 0.5) * 1 * 40 + 400,
-			(Math.random() - 0.5) * i * 1000,
-			scene);
-			// scene.add(ClassObject);
-			CloudObjectArray.push(ClassObject);
+			(Math.random() - 0.5)  * 10000,
+			(Math.random() - 0.5)  * 100 + 400,
+			(Math.random() - 0.5)  * 8000,
+			scene,
+			);
 			
-			// CloudObjectArray.push({
-			// 	names[i]: ClassObject
-			// });
-		}
-		CloudObjectArray.forEach( (obj,i) => { obj['name'] = names[ i ]; } ); 
-		// console.log(names);
-		console.log(CloudObjectArray);
+			CloudObjectArray.push(ClassObject);
 
-	// addSpatialAudio();
+		}
+
+	for (let i = 0; i < 4; i++) {
+		let ClassObject = new cloud2(
+			(Math.random() - 0.5)  * 10000,
+			(Math.random() - 0.5)  * 100 + 400,
+			(Math.random() - 0.5)  * 8000,
+			scene,
+			// camera.position
+			);
+			
+			CloudObjectArray.push(ClassObject);
+
+		}
+
+
+	for (let i = 0; i < 3; i++) {
+		let ClassObject = new cloud3(
+				(Math.random() - 0.5)  * 10000,
+				(Math.random() - 0.5)  * 100 + 400,
+				(Math.random() - 0.5)  * 8000,
+				scene);
+				CloudObjectArray.push(ClassObject);
+	
+			}
+
+			CloudObjectArray.forEach( (obj,i) => { obj['name'] = poemContent[ i ]; } ); 
+			// console.log(CloudObjectArray);
+			
+	addSpatialAudio();
 
 //============================== Raycaster ==============================
 
@@ -129,27 +152,29 @@ raycaster.setFromCamera( mouse, camera );
 // if (CloudObjectArray!= null){
 let cloudMeshArray = CloudObjectArray.map((cloud)=>cloud.cloudMesh)
 const intersects = raycaster.intersectObjects( cloudMeshArray );
-console.log(controls);
+// console.log(controls); 
 // console.log(found);
 
-
-if ( intersects.length > 0 && controls.isLocked ==true) { // hit
+// if ( intersects.length > 0 ) { // hit
+if ( intersects.length > 0 && controls.isLocked == true) { // hit
 	let found = CloudObjectArray.find( (cloud) => { return cloud.cloudMesh === intersects[0].object});
 	
 	// info.style.fontSize = '5vh';
-	// info.style.color = 'black';
-	// info.style.animation =  "fadeInAnimation, ease, 3s"; 
+	info.style.color = 'black';
 	info.innerHTML =  found.name; 
+	info.style.display="block";
 	//  ...[ 0 ]  first intersected object
 	console.log(intersects);
-	console.log(found);
+	// console.log(found);
 	// console.log( intersects[ 0 ].object.name + 'hit');
 	
 } else {
-	
-	info.style.fontSize = '1.9vh';
-	info.style.color = 'black';
-	info.innerHTML = '';
+	info.innerHTML=" ";
+	info.style.opacity= 0;
+	info.style.display="none";
+	// info.style.fontSize = '1.9vh';
+	// info.style.color = 'black';
+	// info.innerHTML = '';
 	
 	
 }},false);
@@ -243,9 +268,19 @@ function animate() {
 		controls.moveForward( - velocity.z * delta );
 
 		controls.getObject().position.y += ( velocity.y * delta ); 
+		
+		// CloudObjectArray.forEach( (obj) => { 
+		// 	obj.cloudMesh.lookAt(camera.position) } ;
 
 	}
-	
+
+	CloudObjectArray.forEach( (obj) => { 
+		if(obj.cloudMesh.up.distanceTo(camera.position)>800){
+			console.log(obj.cloudMesh.up.distanceTo(camera.position));
+			obj.cloudMesh.lookAt(camera.position) ;	
+			}
+		} )
+
 	prevTime = time;
 	renderer.render(scene, camera);
 	
@@ -253,15 +288,12 @@ function animate() {
 
 }
 
-function render(){
+// function render(){
 	
-	controls.update(time);
+// 	controls.update(time);
+// 	renderer.render( scene, camera );
 
-	renderer.render( scene, camera );
-
-
-
-}
+// }
 
 
 
@@ -367,61 +399,61 @@ function initHTMLlayer(){
 
 
 
-async function getData() {
-    const requestURL = "./poem.json";
-    const request = new Request(requestURL);
-    const response = await fetch(request);
-    data = await response.json();
+// async function getData() {
+//     const requestURL = "./poem.json";
+//     const request = new Request(requestURL);
+//     const response = await fetch(request);
+//     data = await response.json();
 
-    if (data.length > 0) {
+//     if (data.length > 0) {
 
-        for (let i = 0; i < data.length; i++) {
-            let p = new Portal(i * 20 - data.length * 20 / 2, 5, i * 20 - data.length * 20 / 2, scene, i);
-            let particle_num = data[i].comments.length;
-            p.centerFrame();
-            p.createParticles(particle_num);
-            portals.push(p);
-        }
-    }
-}
+//         for (let i = 0; i < data.length; i++) {
+//             let p = new Portal(i * 20 - data.length * 20 / 2, 5, i * 20 - data.length * 20 / 2, scene, i);
+//             let particle_num = data[i].comments.length;
+//             p.centerFrame();
+//             p.createParticles(particle_num);
+//             portals.push(p);
+//         }
+//     }
+// }
 
 
-	function populateInfo(data) {
-		if (data) {
-			let container = document.querySelector("#info");
-			container.style.display = "block";
+	// function populateInfo(data) {
+	// 	if (data) {
+	// 		let container = document.querySelector("#info");
+	// 		container.style.display = "block";
 	
-			let title = document.createElement("h1");
-			let author = document.createElement("h2");
+	// 		let title = document.createElement("h1");
+	// 		let author = document.createElement("h2");
 	
-			title.textContent = data.name;
-			author.textContent = data.author;
+	// 		title.textContent = data.name;
+	// 		author.textContent = data.author;
 	
-			container.appendChild(title);
-			container.appendChild(author);
-			container.appendChild(isbn);
-			container.appendChild(status);
-		}
-	}
+	// 		container.appendChild(title);
+	// 		container.appendChild(author);
+	// 		container.appendChild(isbn);
+	// 		container.appendChild(status);
+	// 	}
+	// }
 	
-	function populateComment(data) {
-		if (data) {
+	// function populateComment(data) {
+	// 	if (data) {
 	
-			let container = document.querySelector("#commentContainer");
-			let header = document.createElement("h2");
-			header.textContent = "activity logs";
-			container.appendChild(header);
+	// 		let container = document.querySelector("#commentContainer");
+	// 		let header = document.createElement("h2");
+	// 		header.textContent = "activity logs";
+	// 		container.appendChild(header);
 	
-			container.style.display = "block";
-			for (let i = 0; i < data.comments.length; i++) {
+	// 		container.style.display = "block";
+	// 		for (let i = 0; i < data.comments.length; i++) {
 	
-				let p = document.createElement("p");
-				p.className = "comment"
-				p.textContent = data.comments[i];
-				container.appendChild(p);
+	// 			let p = document.createElement("p");
+	// 			p.className = "comment"
+	// 			p.textContent = data.comments[i];
+	// 			container.appendChild(p);
 	
 	
-			}
+	// 		}
 	
-		}
-	}
+		// }
+	// }
