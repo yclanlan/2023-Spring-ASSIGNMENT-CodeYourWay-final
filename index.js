@@ -4,6 +4,7 @@ import {FirstPersonControls} from 'three/addons/controls/FirstPersonControls.js'
 import {cloud} from "./cloud.js";
 import {cloud2} from './cloud2.js';
 import {cloud3} from './cloud3.js';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 
 let camera, scene, renderer;
@@ -15,13 +16,12 @@ let moveBackward = false;
 let moveLeft = false;
 let moveRight = false;
 
-
 let prevTime = performance.now();
 let velocity = new THREE.Vector3();
 let direction = new THREE.Vector3();
 
 let audioListener;
-let audioListenerMesh;
+// let audioListenerMesh;
 let CloudObjectArray=[];
 
 
@@ -37,16 +37,18 @@ function init() {
 
 // ============================ BASIC SETTING ==============================
 
-	camera = new THREE.PerspectiveCamera(60,
+	camera = new THREE.PerspectiveCamera(
+		30,
 		window.innerWidth / window.innerHeight,
-		1,5000);
+		1,
+		5000);
 
 	camera.position.y = 400;
 	camera.position.z = 1000;
 	
 	scene = new THREE.Scene();
 	scene.background = new THREE.Color(0xE9F1FF);
-	scene.fog = new THREE.FogExp2(0xE9F1FF, 0.0004);
+	scene.fog = new THREE.FogExp2(0xE9F1FF, 0.000358);
 
 	renderer = new THREE.WebGLRenderer();
 	renderer.setPixelRatio(window.devicePixelRatio);
@@ -57,13 +59,13 @@ function init() {
 // ============================== OBJECTS ==============================
 
 	// #########  1. Water Plane   #########
-	geometry = new THREE.PlaneGeometry(20000, 20000);
+	geometry = new THREE.PlaneGeometry(50000, 50000);
 	geometry.rotateX(-Math.PI / 2);
 
 	texture = new THREE.TextureLoader().load('/whitesky.jpg');
 	material = new THREE.MeshBasicMaterial({
 		// color: 0xC9DEFF,
-		color: "rgb(200,220,250,10)",
+		color: "rgb(200,220,250,100)",
 		map: texture,
 	});
 
@@ -74,18 +76,17 @@ function init() {
 
 
 	//  ######### 2. Clouds #########
-	// const names = [ 'cloud01','cloud02','cloud03','cloud04','cloud05','cloud06', 'cloud07', 'cloud08','cloud09','cloud10']
 	const poemContent = [ 
-		"The Vanishing Act <br> The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse",
-		"The Heavy Heart <br> Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart's heavy ache <br> A burden too great to bear.",
-		"The Lost Wanderer <br>The clouds are a guide for the lost,<br>A beacon in the sky's vast expanse.<br>They lead the way through storm and frost,<br>A compass for the wandering nomad.",
-		"The Reflection <br>The clouds reflect the soul's turmoil,<br>A mirror of our innermost fears.<br>Their fleeting forms a constant reminder,<br>That all must pass, even our tears.",
-		"The Love Letter <br>The clouds above, a love letter to the earth,<br>A tender embrace from heaven's berth.<br>Their gentle touch, a reminder of grace,<br>A promise that love never leaves its place.",
-		"The Hopeful <br>The clouds above, a sign of hope,<br>A symbol of a brighter tomorrow.<br>Their fleeting nature a testament,<br>To the ever-changing nature of our sorrows.",
-		"The Starry Night <br>The clouds above, a canvas of the night,<br>A backdrop for the stars' brilliant light.<br>Their fleeting forms a reminder,<br>That even the sky can change in time.",
-		"The Journey <br>The clouds above, a journey through life,<br>A metaphor for all that we strive.<br>Their ever-changing forms a lesson,<br>That in life, we must learn to listen.",
-		"The Whispering Wind <br>The clouds that sail on the whispering wind,<br>Carry with them secrets yet to be revealed.<br>Their silent forms, a messenger of fate,<br>A hint of what lies ahead, a promise to wait.",
-		"The Freedom <br>The clouds above, a symbol of freedom,<br>A reminder that our minds can roam.<br>Their ever-changing forms, a release,<br>From the cages that bind us to our homes."
+		"<h3>The Vanishing Act</h3> 	 The clouds that once hung overhead <br> Now fade away like dreams once dreamed <br> Their wispy forms, like fading ghosts<br> Disappear into the blue expanse",
+		"<h3>The Heavy Heart</h3> 		 Grey clouds loom above like weights,<br> Heavy with sorrow and despair.<br> They mirror the heart's heavy ache <br> A burden too great to bear.",
+		"<h3>The Lost Wanderer</h3> 	 The clouds are a guide for the lost,<br>A beacon in the sky's vast expanse.<br>They lead the way through storm and frost,<br>A compass for the wandering nomad.",
+		"<h3>The Reflection</h3>		 The clouds reflect the soul's turmoil,<br>A mirror of our innermost fears.<br>Their fleeting forms a constant reminder,<br>That all must pass, even our tears.",
+		"<h3>The Love Letter</h3>		 The clouds above, a love letter to the earth,<br>A tender embrace from heaven's berth.<br>Their gentle touch, a reminder of grace,<br>A promise that love never leaves its place.",
+		"<h3>The Hopeful</h3> 			 The clouds above, a sign of hope,<br>A symbol of a brighter tomorrow.<br>Their fleeting nature a testament,<br>To the ever-changing nature of our sorrows.",
+		"<h3>The Starry Night</h3> 		 The clouds above, a canvas of the night,<br>A backdrop for the stars' brilliant light.<br>Their fleeting forms a reminder,<br>That even the sky can change in time.",
+		"<h3>Mourning Skies</h3>		 Gray clouds drift in the sky,<br>A somber mood they imply,<br>Heavy with tears they cry,<br>A mournful melody they supply.",
+		"<h3>Impending Storm</h3>      	 The clouds gather in the sky,<br> A foreboding sight up high,<br>A storm is coming I sigh,<br>A feeling of impending goodbye.<br>",
+		"<h3>Lonely Clouds</h3>			 Wispy clouds float on by,<br>A peaceful scene they imply,<br>But my heart cannot deny,<br>The loneliness I feel inside."
 ]
 
 	for (let i = 0; i < 3; i++) {
@@ -120,6 +121,7 @@ function init() {
 				(Math.random() - 0.5)  * 100 + 400,
 				(Math.random() - 0.5)  * 8000,
 				scene);
+				
 				CloudObjectArray.push(ClassObject);
 	
 			}
@@ -149,33 +151,24 @@ raycaster.setFromCamera( mouse, camera );
 // const intersects = raycaster.intersectObjects( scene.children );
 // console.log(scene.children)
 // console.log(CloudObjectArray);
-// if (CloudObjectArray!= null){
+
 let cloudMeshArray = CloudObjectArray.map((cloud)=>cloud.cloudMesh)
 const intersects = raycaster.intersectObjects( cloudMeshArray );
 // console.log(controls); 
 // console.log(found);
 
-// if ( intersects.length > 0 ) { // hit
+
 if ( intersects.length > 0 && controls.isLocked == true) { // hit
 	let found = CloudObjectArray.find( (cloud) => { return cloud.cloudMesh === intersects[0].object});
 	
-	// info.style.fontSize = '5vh';
 	info.style.color = 'black';
 	info.innerHTML =  found.name; 
 	info.style.display="block";
-	//  ...[ 0 ]  first intersected object
-	console.log(intersects);
-	// console.log(found);
-	// console.log( intersects[ 0 ].object.name + 'hit');
-	
+
 } else {
 	info.innerHTML=" ";
-	info.style.opacity= 0;
 	info.style.display="none";
-	// info.style.fontSize = '1.9vh';
-	// info.style.color = 'black';
-	// info.innerHTML = '';
-	
+
 	
 }},false);
 	
@@ -191,62 +184,63 @@ initControlMove();
 
 function addSpatialAudio() {
 
-	// ################## LISTENER ##################
-
-	// first lets add our audio listener.  This is our ear (or microphone) within the 3D space.
+	//Listener
 	audioListener = new THREE.AudioListener();
+	camera.add(audioListener);
 
-	// create a 3D mesh so we can see the location of the audio listener
-	// this is not strictly necessary, but can be helpful for debugging
-	audioListenerMesh = new THREE.Mesh(
-		new THREE.BoxGeometry(2, 2, 2),
-		new THREE.MeshBasicMaterial({})
-	);
-	audioListenerMesh.add(audioListener);
-	audioListenerMesh.position.set(0, 0, 0);
-	scene.add(audioListenerMesh);
-	
-	// #################### AUDIO ####################
-	// LOADER-> LOAD SOURCE TO MESH -> ADD MESH TO SCENE 
-	// 1. create an audio loader 
+	///// background Sound /////
+	let audioSource = new THREE.Audio(audioListener);
 	let audioLoader = new THREE.AudioLoader();
-	
+	// console.log(audioSource);
 
-	// 2. create a source
-	let audioSource = new THREE.PositionalAudio(audioListener);
-	
-
-	// 3.use loader load the audio file into the positional audio source
-	audioLoader.load("wind_sound.mp3", function (buffer) {
+	audioLoader.load("wind_sound.mp3", 
+	function (buffer) {
 	audioSource.setBuffer(buffer);
-	// audioSource.setDistanceModel("exponential");
-	// audioSource.setRefDistance(0.5);
-	// audioSource.setRolloffFactor(3);
 	audioSource.setLoop(true);
-	audioSource.setVolume(0.6);
+	audioSource.setVolume(1.3);
 	audioSource.play();
 	});
 
 
-	//4. add source to mesh!
+	///// Thunder Sound /////
+	let ThunderAudioSound = new THREE.PositionalAudio(audioListener);
+	let audioLoader2 = new THREE.AudioLoader();
+
+	audioLoader2.load("ThunderSound.mp3", 
+	function (buffer) {
+		ThunderAudioSound.setBuffer(buffer);
+		ThunderAudioSound.setRefDistance( 50 );
+		ThunderAudioSound.setLoop(true);
+		ThunderAudioSound.setVolume(2);  
+		ThunderAudioSound.play();
+		ThunderAudioSound.setMaxDistance(500);
+	});
+
+	for(let i=7; i<10 ;i++){
 	let audiomesh = new THREE.Mesh(
-		new THREE.SphereGeometry(10000, 12, 12),
-		new THREE.MeshBasicMaterial({
-			color: "blue"
-		})
+		new THREE.SphereGeometry(300, 12, 12),
+		new THREE.MeshPhongMaterial({color: "red"})
 	);
 
-	audiomesh.add(audioSource);
-	audiomesh.visible = false;
-	scene.add(audiomesh);
+	audiomesh.position.x=(CloudObjectArray[i].cloudMesh.position.x);
+	audiomesh.position.y=(CloudObjectArray[i].cloudMesh.position.y);
+	audiomesh.position.z=(CloudObjectArray[i].cloudMesh.position.z);
 
-	}
+		// console.log(audiomesh.position);
+	scene.add(audiomesh);
+	audiomesh.add(ThunderAudioSound);
+	audiomesh.visible = false;
+	};
+	
+
+}
 
 
 
 function animate() {
 
 	requestAnimationFrame(animate);
+	
 	const time = performance.now();
 
 	if ( controls.isLocked === true ) {
@@ -259,24 +253,21 @@ function animate() {
 
 		direction.z = Number( moveForward ) - Number( moveBackward );
 		direction.x = Number( moveRight ) - Number( moveLeft );
-		direction.normalize(); // this ensures consistent movements in all directions
+		direction.normalize(); 
+		// this ensures consistent movements in all directions
 
 		if ( moveForward || moveBackward ) velocity.z -= direction.z * 1000.0 * delta;
 		if ( moveLeft || moveRight ) velocity.x -= direction.x * 1000.0 * delta;
 
 		controls.moveRight( - velocity.x * delta );
 		controls.moveForward( - velocity.z * delta );
-
 		controls.getObject().position.y += ( velocity.y * delta ); 
-		
-		// CloudObjectArray.forEach( (obj) => { 
-		// 	obj.cloudMesh.lookAt(camera.position) } ;
 
 	}
 
 	CloudObjectArray.forEach( (obj) => { 
-		if(obj.cloudMesh.up.distanceTo(camera.position)>800){
-			console.log(obj.cloudMesh.up.distanceTo(camera.position));
+		if(obj.cloudMesh.up.distanceTo(camera.position)>1000){
+			// console.log(obj.cloudMesh.up.distanceTo(camera.position));
 			obj.cloudMesh.lookAt(camera.position) ;	
 			}
 		} )
@@ -288,14 +279,6 @@ function animate() {
 
 }
 
-// function render(){
-	
-// 	controls.update(time);
-// 	renderer.render( scene, camera );
-
-// }
-
-
 
 //window Resize
 window.addEventListener('resize', onWindowResize, false);
@@ -304,12 +287,9 @@ function onWindowResize() {
 
 	camera.aspect = window.innerWidth / window.innerHeight;
 	camera.updateProjectionMatrix();
-
 	renderer.setSize(window.innerWidth, window.innerHeight);
 
 	};
-
-//edit text
 
 function initControlMove(){
 	const onKeyDown = function ( event ) {
@@ -373,7 +353,6 @@ function initControlMove(){
 
 function initHTMLlayer(){
 
-
 		instructions.addEventListener('click', function () {
 		controls.lock();
 		});
@@ -398,62 +377,3 @@ function initHTMLlayer(){
 }
 
 
-
-// async function getData() {
-//     const requestURL = "./poem.json";
-//     const request = new Request(requestURL);
-//     const response = await fetch(request);
-//     data = await response.json();
-
-//     if (data.length > 0) {
-
-//         for (let i = 0; i < data.length; i++) {
-//             let p = new Portal(i * 20 - data.length * 20 / 2, 5, i * 20 - data.length * 20 / 2, scene, i);
-//             let particle_num = data[i].comments.length;
-//             p.centerFrame();
-//             p.createParticles(particle_num);
-//             portals.push(p);
-//         }
-//     }
-// }
-
-
-	// function populateInfo(data) {
-	// 	if (data) {
-	// 		let container = document.querySelector("#info");
-	// 		container.style.display = "block";
-	
-	// 		let title = document.createElement("h1");
-	// 		let author = document.createElement("h2");
-	
-	// 		title.textContent = data.name;
-	// 		author.textContent = data.author;
-	
-	// 		container.appendChild(title);
-	// 		container.appendChild(author);
-	// 		container.appendChild(isbn);
-	// 		container.appendChild(status);
-	// 	}
-	// }
-	
-	// function populateComment(data) {
-	// 	if (data) {
-	
-	// 		let container = document.querySelector("#commentContainer");
-	// 		let header = document.createElement("h2");
-	// 		header.textContent = "activity logs";
-	// 		container.appendChild(header);
-	
-	// 		container.style.display = "block";
-	// 		for (let i = 0; i < data.comments.length; i++) {
-	
-	// 			let p = document.createElement("p");
-	// 			p.className = "comment"
-	// 			p.textContent = data.comments[i];
-	// 			container.appendChild(p);
-	
-	
-	// 		}
-	
-		// }
-	// }

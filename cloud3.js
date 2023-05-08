@@ -6,11 +6,11 @@ export class cloud3{
 
     constructor(x, y, z, scene,look,id){
 
-	for (let i = 0; i < 1; i++) {
-    let cloudGeo = new THREE.PlaneGeometry(Math.random() * 500 + 300, 
-										   Math.random() * 200 + 300);
-	let cloudTexture = new THREE.TextureLoader().load("/smoke-3.png");
+	// for (let i = 0; i < 1; i++) {
 
+    let cloudGeo = new THREE.PlaneGeometry(Math.random() * 500 + 800, 
+										   Math.random() * 200 + 500);
+	let cloudTexture = new THREE.TextureLoader().load("/darkCloud.png");
 	// cloudTexture.magFilter = THREE.LinearFilter;
 	// cloudTexture.minFilter = THREE.LinearFilter;
 	// this.cloudMeshes = [];
@@ -18,16 +18,13 @@ export class cloud3{
 		color: 0x0084ff,
 		map: cloudTexture,
 		transparent: true,
-		opacity: Math.random() * 0.3
+		opacity: Math.random() * 0.5
 		});
 
 
-
-	
 		// let mesh = new THREE.Mesh(cloudGeo, cloudMaterial);
 
 		this.cloudMesh = new THREE.Mesh(cloudGeo, cloudMaterial);
-		
 		this.cloudMesh.position.set(
             // x,y,z
             (Math.random()-0.5) * 200 + x,
@@ -35,18 +32,18 @@ export class cloud3{
             (Math.random()-0.5) * 200 + z
 			);
         // this.cloudMesh.rotateZ( Math.random() * 4);
-		
-	
 		this.cloudMesh.up.set(0, 1, 0);
-        this.frameCount = 0;
 		scene.add(this.cloudMesh);
 
-		}
+	
+
 		
-		//display information
-        this.id = id;
-		// this.cloudMesh.lookAt(look);
-		// this.cloudMeshes.push(mesh);
+        this.frameCount = 0;
+		
+		// (for loop)
+		// }
+		
+
 		
 
     }
